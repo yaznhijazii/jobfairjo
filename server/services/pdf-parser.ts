@@ -1,8 +1,5 @@
-// Wrapper for pdf-parse to handle CommonJS/ESM compatibility
-import { createRequire } from "module";
-
-const require = createRequire(import.meta.url);
-const pdfParse = require("pdf-parse");
+// PDF text extraction using pdf-parse
+import { PDFParse } from "pdf-parse";
 
 export interface PDFData {
   text: string;
@@ -12,12 +9,15 @@ export interface PDFData {
   version: string;
 }
 
+// Create parser instance
+const pdfParser = new PDFParse();
+
 /**
  * Extract text from PDF buffer
  */
 export async function extractTextFromPDF(buffer: Buffer): Promise<string> {
   try {
-    const data: PDFData = await pdfParse(buffer);
+    const data = await pdfParser.parse(buffer);
     return data.text.trim();
   } catch (error) {
     console.error("Error parsing PDF:", error);
