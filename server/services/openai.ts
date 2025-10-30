@@ -19,23 +19,32 @@ export async function calculateSimilarityScore(
   jobDescription: string
 ): Promise<number> {
   try {
-    const prompt = `Compare the following CV and Job Description. Analyze the candidate's skills, experience, and qualifications against the job requirements.
-    
+    const prompt = `You are an expert recruitment AI. Analyze how well this candidate's CV matches the job description.
+
+Focus on:
+- Relevant skills and technologies mentioned
+- Years of experience and seniority level
+- Domain expertise and industry knowledge
+- Educational background
+- Transferable skills (consider skills that can be learned quickly)
+
+Be realistic but optimistic - if a candidate has 60-70% of the required skills, they could still be a strong match.
+
 Provide a similarity score from 0.0 to 1.0 where:
-- 1.0 = Perfect match, candidate exceeds all requirements
-- 0.8-0.9 = Excellent match, candidate meets most requirements with strong alignment
-- 0.6-0.7 = Good match, candidate meets many requirements
-- 0.4-0.5 = Moderate match, some relevant skills
-- 0.0-0.3 = Poor match, minimal alignment
+- 0.9-1.0 = Exceptional match, candidate exceeds requirements
+- 0.7-0.8 = Strong match, candidate meets most requirements
+- 0.5-0.6 = Good match, candidate has relevant experience
+- 0.3-0.4 = Moderate match, some transferable skills
+- 0.0-0.2 = Poor match, minimal relevant experience
 
-Respond with ONLY a JSON object in this format: { "score": number }
+Respond with ONLY a JSON object: { "score": number }
 
 ---
-CV (first 3000 characters):
-${cvText.substring(0, 3000)}
+CANDIDATE CV:
+${cvText.substring(0, 5000)}
 ---
-Job Description:
-${jobDescription}
+JOB DESCRIPTION:
+${jobDescription.substring(0, 3000)}
 ---`;
 
     const response = await openai.chat.completions.create({
@@ -43,7 +52,7 @@ ${jobDescription}
       messages: [
         {
           role: "system",
-          content: "You are an expert recruitment AI that analyzes resumes and job descriptions to calculate precise matching scores. Always respond with valid JSON only."
+          content: "You are an expert recruitment AI that finds potential in candidates. Consider transferable skills and learning potential. Be optimistic but realistic. Always respond with valid JSON only."
         },
         {
           role: "user",

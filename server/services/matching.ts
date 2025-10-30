@@ -4,6 +4,9 @@ import { generateEmbedding, cosineSimilarity, calculateSimilarityScore } from ".
 // Cache for job embeddings to avoid regenerating on every request
 const jobEmbeddingsCache = new Map<string, number[]>();
 
+// Minimum match threshold - only show jobs with at least 25% match
+const MINIMUM_MATCH_THRESHOLD = 0.25;
+
 function getJobCacheKey(job: Job): string {
   return `${job.title}:${job.department}:${job.location}`;
 }
@@ -12,6 +15,7 @@ function getJobCacheKey(job: Job): string {
  * Two-stage AI matching process with embedding caching:
  * Stage 1: Quick semantic filtering using embeddings (filter to top 10)
  * Stage 2: Deep AI analysis using OpenAI on top candidates (get final top 3)
+ * Only returns matches above the minimum threshold
  */
 export async function matchJobsToCV(cvText: string, jobs: Job[]): Promise<MatchResult[]> {
   if (jobs.length === 0) {
@@ -60,8 +64,9 @@ export async function matchJobsToCV(cvText: string, jobs: Job[]): Promise<MatchR
     })
   );
 
-  // Sort by final score and take top 3
+  // Filter by minimum threshold, sort by final score, and take top 3
   const topMatches = deepAnalysisResults
+    .filter(match => match.score >= MINIMUM_MATCH_THRESHOLD)
     .sort((a, b) => b.score - a.score)
     .slice(0, 3)
     .map((match, index) => ({
@@ -71,7 +76,7 @@ export async function matchJobsToCV(cvText: string, jobs: Job[]): Promise<MatchR
     }));
 
   const duration = Date.now() - startTime;
-  console.log(`Matching complete in ${duration}ms`);
+  console.log(`Matching complete in ${duration}ms - found ${topMatches.length} matches above ${MINIMUM_MATCH_THRESHOLD * 100}% threshold`);
 
   return topMatches;
 }

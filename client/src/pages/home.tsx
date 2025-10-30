@@ -263,7 +263,7 @@ export default function Home() {
       {/* Footer */}
       <footer className="border-t py-8 px-6 mt-auto">
         <div className="max-w-7xl mx-auto text-center text-sm text-muted-foreground">
-          <p>Powered by Advanced AI • © 2025 JoAcademy</p>
+          <p>© 2025 JoAcademy</p>
         </div>
       </footer>
     </div>
