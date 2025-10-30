@@ -72,12 +72,21 @@ export default function Home() {
       return apiRequest<MatchResponse>("POST", "/api/match-jobs", { cvText: text });
     },
     onSuccess: (data) => {
-      setMatches(data.matches);
-      setProcessingStep("complete");
-      toast({
-        title: "Matches Found!",
-        description: `Found ${data.matches.length} top opportunities for you.`,
-      });
+      if (data && data.matches && Array.isArray(data.matches)) {
+        setMatches(data.matches);
+        setProcessingStep("complete");
+        toast({
+          title: "Matches Found!",
+          description: `Found ${data.matches.length} top opportunities for you.`,
+        });
+      } else {
+        setProcessingStep("error");
+        toast({
+          title: "Matching Failed",
+          description: "Received invalid response from server",
+          variant: "destructive",
+        });
+      }
     },
     onError: (error) => {
       setProcessingStep("error");
