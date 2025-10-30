@@ -73,15 +73,18 @@ Preferred communication style: Simple, everyday language.
 3. **Matching Service** (`server/services/matching.ts`)
    - **Two-Stage AI Matching Process**:
      - Stage 1: Quick semantic filtering using OpenAI embeddings (filters to top 10 candidates)
-     - Stage 2: Deep GPT-5 analysis on top candidates for final ranking (returns top 3)
+     - Stage 2: Deep GPT-4 analysis on top candidates for final ranking (returns top 3)
+   - **Embedding Caching System**: Job embeddings cached in-memory Map to prevent redundant OpenAI calls
    - Weighted scoring: 70% deep AI analysis + 30% embedding similarity
    - Cosine similarity calculation for vector comparison
+   - Performance: O(1) for cached jobs, avoiding rate limits on repeated requests
 
 4. **OpenAI Service** (`server/services/openai.ts`)
-   - Uses OpenAI's GPT-5 model (latest as of August 2025)
-   - Generates embeddings for semantic similarity
+   - Uses OpenAI's GPT-4 model for deep semantic analysis
+   - Generates embeddings using `text-embedding-3-small` model for semantic similarity
    - Performs deep analysis comparing CV skills/experience against job requirements
    - Returns structured JSON responses with 0-1 similarity scores
+   - **Production Ready**: Valid API key configured, embedding caching implemented
 
 **Development/Production Setup**:
 - Vite middleware for hot module replacement in development
