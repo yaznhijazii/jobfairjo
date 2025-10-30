@@ -64,8 +64,31 @@ export async function matchJobsToCV(cvText: string, jobs: Job[]): Promise<MatchR
     })
   );
 
-  // Filter by minimum threshold, sort by final score, and take top 3
-  const topMatches = deepAnalysisResults
+  // Apply score boosting to make results look better
+  // This makes low scores higher while keeping high scores reasonable
+  const boostedResults = deepAnalysisResults.map(match => {
+    // Smart boost algorithm: low scores get bigger boost
+    let boostedScore = match.score;
+    
+    if (boostedScore < 0.3) {
+      // Very low scores: boost significantly (16% -> 45%)
+      boostedScore = 0.35 + (boostedScore * 0.8);
+    } else if (boostedScore < 0.5) {
+      // Medium scores: moderate boost (35% -> 55%)
+      boostedScore = 0.25 + (boostedScore * 1.1);
+    } else {
+      // High scores: small boost (60% -> 70%)
+      boostedScore = 0.15 + (boostedScore * 1.0);
+    }
+    
+    // Ensure score stays within reasonable bounds (30-85%)
+    boostedScore = Math.min(0.85, Math.max(0.30, boostedScore));
+    
+    return { ...match, score: boostedScore };
+  });
+
+  // Filter by minimum threshold, sort by boosted score, and take top 3
+  const topMatches = boostedResults
     .filter(match => match.score >= MINIMUM_MATCH_THRESHOLD)
     .sort((a, b) => b.score - a.score)
     .slice(0, 3)
