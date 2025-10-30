@@ -1,8 +1,15 @@
 import type { Job, MatchResult } from "@shared/schema";
 import { generateEmbedding, cosineSimilarity, calculateSimilarityScore } from "./openai";
 
+// Cache for job embeddings to avoid regenerating on every request
+const jobEmbeddingsCache = new Map<string, number[]>();
+
+function getJobCacheKey(job: Job): string {
+  return `${job.title}:${job.department}:${job.location}`;
+}
+
 /**
- * Two-stage AI matching process:
+ * Two-stage AI matching process with embedding caching:
  * Stage 1: Quick semantic filtering using embeddings (filter to top 10)
  * Stage 2: Deep AI analysis using OpenAI on top candidates (get final top 3)
  */
@@ -11,21 +18,27 @@ export async function matchJobsToCV(cvText: string, jobs: Job[]): Promise<MatchR
     return [];
   }
 
-  console.log(`Starting two-stage matching for ${jobs.length} jobs...`);
+  const startTime = Date.now();
 
   // Stage 1: Quick Semantic Filtering using embeddings
-  console.log("Stage 1: Quick semantic filtering with embeddings...");
-  
   const cvEmbedding = await generateEmbedding(cvText);
   
-  // Generate embeddings for all jobs (using title + department + location for quick match)
+  // Generate or retrieve cached embeddings for all jobs
   const jobScores = await Promise.all(
-    jobs.map(async (job, index) => {
+    jobs.map(async (job) => {
+      const cacheKey = getJobCacheKey(job);
       const jobText = `${job.title} ${job.department} ${job.location}`;
-      const jobEmbedding = await generateEmbedding(jobText);
+      
+      // Try to get from cache, otherwise generate and cache
+      let jobEmbedding = jobEmbeddingsCache.get(cacheKey);
+      if (!jobEmbedding) {
+        jobEmbedding = await generateEmbedding(jobText);
+        jobEmbeddingsCache.set(cacheKey, jobEmbedding);
+      }
+      
       const similarity = cosineSimilarity(cvEmbedding, jobEmbedding);
       
-      return { job, similarity, index };
+      return { job, similarity };
     })
   );
 
@@ -34,11 +47,7 @@ export async function matchJobsToCV(cvText: string, jobs: Job[]): Promise<MatchR
     .sort((a, b) => b.similarity - a.similarity)
     .slice(0, 10);
 
-  console.log(`Stage 1 complete: Filtered to ${topCandidates.length} top candidates`);
-
   // Stage 2: Deep AI Analysis on top candidates
-  console.log("Stage 2: Deep AI analysis on top candidates...");
-  
   const deepAnalysisResults = await Promise.all(
     topCandidates.map(async ({ job, similarity }) => {
       // Use OpenAI for deep analysis on full job description
@@ -61,8 +70,13 @@ export async function matchJobsToCV(cvText: string, jobs: Job[]): Promise<MatchR
       rank: index + 1
     }));
 
-  console.log(`Stage 2 complete: Found ${topMatches.length} top matches`);
-  console.log(`Top scores: ${topMatches.map(m => `${(m.score * 100).toFixed(1)}%`).join(", ")}`);
+  const duration = Date.now() - startTime;
+  console.log(`Matching complete in ${duration}ms`);
 
   return topMatches;
+}
+
+// Optional: Clear cache periodically to avoid unbounded growth
+export function clearEmbeddingsCache() {
+  jobEmbeddingsCache.clear();
 }
