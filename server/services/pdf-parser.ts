@@ -1,5 +1,5 @@
 // PDF text extraction using pdf-parse
-import { PDFParse } from "pdf-parse";
+import { PDFParse, VerbosityLevel } from "pdf-parse";
 
 export interface PDFData {
   text: string;
@@ -9,14 +9,16 @@ export interface PDFData {
   version: string;
 }
 
-// Create parser instance
-const pdfParser = new PDFParse();
-
 /**
  * Extract text from PDF buffer
  */
 export async function extractTextFromPDF(buffer: Buffer): Promise<string> {
   try {
+    // Create parser with options
+    const pdfParser = new PDFParse({
+      verbosity: VerbosityLevel.ERRORS,
+    });
+    
     const data = await pdfParser.parse(buffer);
     return data.text.trim();
   } catch (error) {
