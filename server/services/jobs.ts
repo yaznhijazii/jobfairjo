@@ -1,4 +1,4 @@
-import type { Job } from "@shared/schema";
+import type { Job } from "../../shared/schema";
 import * as cheerio from 'cheerio';
 
 const JOACADEMY_API_URL = process.env.JOACADEMY_API_URL || "https://careers.joacademy.com/en/api/v1/career_page/jobs/live";

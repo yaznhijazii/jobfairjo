@@ -1,4 +1,4 @@
-import type { Job, MatchResult } from "@shared/schema";
+import type { Job, MatchResult } from "../../shared/schema";
 import { generateEmbedding, cosineSimilarity, calculateSimilarityScore } from "./openai";
 
 // Cache for job embeddings to avoid regenerating on every request

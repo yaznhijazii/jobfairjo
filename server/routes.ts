@@ -1,7 +1,7 @@
 import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import multer from "multer";
-import { matchRequestSchema } from "@shared/schema";
+import { matchRequestSchema } from "../shared/schema";
 import { fetchJoAcademyJobs } from "./services/jobs";
 import { matchJobsToCV } from "./services/matching";
 import { extractTextFromPDF } from "./services/pdf-parser";
