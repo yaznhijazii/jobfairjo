@@ -88,12 +88,21 @@ export default function Home() {
       console.log("[Client] Matching Success:", data);
       if (data && data.matches && Array.isArray(data.matches)) {
         console.log(`[Client] Found ${data.matches.length} job matches`);
+        const highMatches = data.matches.filter(m => m.score >= 0.4);
         setMatches(data.matches);
         setProcessingStep("complete");
-        toast({
-          title: "Matches Found!",
-          description: `Found ${data.matches.length} top opportunities for you.`,
-        });
+        
+        if (highMatches.length > 0) {
+          toast({
+            title: "Matches Found!",
+            description: `Found ${highMatches.length} top ${highMatches.length === 1 ? 'opportunity' : 'opportunities'} for you.`,
+          });
+        } else {
+          toast({
+            title: "Analysis Complete",
+            description: "We couldn't find a direct match, but check our general interest form below.",
+          });
+        }
       } else {
         setProcessingStep("error");
         toast({
@@ -196,21 +205,22 @@ export default function Home() {
 
             {/* Low Match Score State: Show ONLY interest form, no matches */}
             {matches.length > 0 && matches[0].score < 0.4 ? (
-              <div className="max-w-3xl mx-auto mb-10">
-                <Card className="p-8 border-amber-200 bg-amber-50 text-amber-900 shadow-lg text-center">
-                  <div className="flex flex-col items-center gap-4">
-                    <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mb-2">
-                      <AlertCircle className="w-10 h-10 text-amber-600" />
+              <div className="max-w-2xl mx-auto mb-10">
+                <Card className="p-10 border-none bg-gradient-to-br from-amber-50 to-orange-50 shadow-xl text-center overflow-hidden relative">
+                  {/* Decorative background element */}
+                  <div className="absolute -top-10 -right-10 w-32 h-32 bg-amber-200/20 rounded-full blur-3xl" />
+                  
+                  <div className="relative z-10 flex flex-col items-center gap-4">
+                    <div className="w-20 h-20 bg-white rounded-2xl shadow-sm flex items-center justify-center mb-2 rotate-3 hover:rotate-0 transition-transform duration-300">
+                      <AlertCircle className="w-10 h-10 text-amber-500" />
                     </div>
-                    <h3 className="font-bold text-2xl mb-2">Build Your Future at JO Academy</h3>
-                    <p className="text-lg mb-6 max-w-xl">
-                      We didn't find a direct match for your current profile among our open roles. 
-                      However, we're always looking for talented individuals! Please share your details 
-                      via our interest form, and we'll reach out when a suitable position opens up.
+                    <h3 className="font-bold text-3xl text-amber-900 tracking-tight">Let's Stay Connected</h3>
+                    <p className="text-lg text-amber-800/80 mb-6 max-w-md leading-relaxed">
+                      We didn't find an exact match today, but we'd love to keep you in our talent pool for future roles.
                     </p>
-                    <Button asChild variant="default" size="lg" className="bg-amber-600 hover:bg-amber-700 text-white px-8 h-14 text-lg">
+                    <Button asChild variant="default" size="lg" className="bg-amber-600 hover:bg-amber-700 text-white px-10 h-14 text-lg rounded-xl shadow-lg shadow-amber-200 transition-all hover:scale-105 active:scale-95">
                       <a href="https://joacademy123.bitrix24.site/crm_form_o2o4v/" target="_blank" rel="noreferrer">
-                        Fill General Interest Form
+                        Join Talent Pool
                       </a>
                     </Button>
                   </div>
@@ -219,7 +229,7 @@ export default function Home() {
             ) : (
               /* High Match Score State: Show matches */
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                {matches.map((match, index) => (
+                {matches.filter(m => m.score >= 0.4).map((match, index) => (
                   <JobMatchCard
                     key={index}
                     match={match}

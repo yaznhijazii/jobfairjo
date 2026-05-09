@@ -4,8 +4,8 @@ import { generateEmbedding, cosineSimilarity, calculateSimilarityScore } from ".
 // Cache for job embeddings to avoid regenerating on every request
 const jobEmbeddingsCache = new Map<string, number[]>();
 
-// Minimum match threshold - only show jobs with at least 25% match
-const MINIMUM_MATCH_THRESHOLD = 0.25;
+// Minimum match threshold - only show jobs with at least 40% match
+const MINIMUM_MATCH_THRESHOLD = 0.40;
 
 function getJobCacheKey(job: Job): string {
   return `${job.title}:${job.department}:${job.location}`;
