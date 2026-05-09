@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Upload, Zap, Briefcase, TrendingUp, CheckCircle2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -19,6 +19,15 @@ export default function Home() {
   const [matches, setMatches] = useState<MatchResult[]>([]);
   const [selectedJob, setSelectedJob] = useState<MatchResult | null>(null);
   const { toast } = useToast();
+  const resultsRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    if (processingStep === "complete" && matches.length > 0) {
+      setTimeout(() => {
+        resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 100);
+    }
+  }, [processingStep, matches.length]);
 
   const uploadMutation = useMutation({
     mutationFn: async (file: File) => {
@@ -144,7 +153,7 @@ export default function Home() {
               <div className="mb-6">
                 <h2 className="text-2xl font-semibold mb-2">Submit Your Resume</h2>
                 <p className="text-sm text-muted-foreground">
-                  Upload your CV in PDF format to start the matching process
+                  Upload your CV in PDF or Word format to start the matching process
                 </p>
               </div>
               <FileUploadZone 
@@ -174,7 +183,7 @@ export default function Home() {
 
       {/* Results Section */}
       {processingStep === "complete" && matches.length > 0 && (
-        <section className="px-6 pb-16">
+        <section ref={resultsRef} className="px-6 pb-16">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-8">
               <div className="inline-flex items-center gap-2 text-green-600 mb-2">

@@ -2,6 +2,7 @@ import { Check, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { ProcessingStep } from "@shared/schema";
 import { Card } from "@/components/ui/card";
+import { useEffect, useRef } from "react";
 
 interface ProcessingStatusProps {
   step: ProcessingStep;
@@ -17,6 +18,20 @@ const steps = [
 
 export function ProcessingStatus({ step, fileName }: ProcessingStatusProps) {
   const currentStepIndex = steps.findIndex((s) => s.id === step);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (containerRef.current && currentStepIndex !== -1) {
+      const stepElements = containerRef.current.children;
+      if (stepElements[currentStepIndex]) {
+        stepElements[currentStepIndex].scrollIntoView({
+          behavior: "smooth",
+          block: "nearest",
+          inline: "center"
+        });
+      }
+    }
+  }, [currentStepIndex]);
 
   return (
     <Card className="p-8">
@@ -49,7 +64,10 @@ export function ProcessingStatus({ step, fileName }: ProcessingStatusProps) {
         </div>
 
         {/* Steps Layer */}
-        <div className="relative z-10 flex sm:grid sm:grid-cols-4 gap-2 sm:gap-4 overflow-x-auto sm:overflow-visible pb-4 sm:pb-0 scrollbar-hide">
+        <div 
+          ref={containerRef}
+          className="relative z-10 flex sm:grid sm:grid-cols-4 gap-2 sm:gap-4 overflow-x-auto sm:overflow-visible pb-4 sm:pb-0 scrollbar-hide"
+        >
           {steps.map((s, index) => {
             const isCompleted = index < currentStepIndex;
             const isCurrent = index === currentStepIndex;

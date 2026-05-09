@@ -63,11 +63,11 @@ export async function matchJobsToCV(cvText: string, jobs: Job[]): Promise<MatchR
   // Stage 2: Deep AI Analysis on top candidates
   const deepAnalysisResults = await Promise.all(
     topCandidates.map(async ({ job, similarity }) => {
-      // Use OpenAI for deep analysis on full job description
-      const { score: deepScore, rationale } = await calculateSimilarityScore(cvText, job.description);
+      // Use OpenAI for deep analysis on full job description and title
+      const { score: deepScore, rationale } = await calculateSimilarityScore(cvText, job.title, job.description);
       
-      // Use the AI deep score as the primary score, with a tiny influence from embedding
-      // This ensures the percentage reflects the AI's "generous" reasoning
+      // Use the AI deep score as the primary score, with a small influence from semantic embedding
+      // This provides a balanced score that prioritizes deep analysis
       const finalScore = (deepScore * 0.9) + (similarity * 0.1);
       
       return { job, score: finalScore, rationale };
@@ -81,8 +81,9 @@ export async function matchJobsToCV(cvText: string, jobs: Job[]): Promise<MatchR
     return { ...match, score: finalScore };
   });
 
-  // Filter by minimum threshold (e.g. 5%), sort by score, and take top 3
+  // Filter by minimum threshold, sort by score, and take top 3
   const topMatches = finalResults
+    .filter(match => match.score >= MINIMUM_MATCH_THRESHOLD)
     .sort((a, b) => b.score - a.score)
     .slice(0, 3)
     .map((match, index) => ({

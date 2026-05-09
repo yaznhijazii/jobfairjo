@@ -19,26 +19,32 @@ export interface MatchScore {
  */
 export async function calculateSimilarityScore(
   cvText: string,
+  jobTitle: string,
   jobDescription: string
 ): Promise<MatchScore> {
   try {
-    const prompt = `You are an intelligent recruitment systems analyzer. Your goal is to identify if a candidate's career path aligns with a job role.
+    const prompt = `You are an expert technical recruitment systems analyzer. Your goal is to strictly evaluate if a candidate's career path and skills align with a specific job role.
     
-    MATCHING STRATEGY:
-    1. ROLE ALIGNMENT: If the Job Title or core role (e.g., Software Engineer, Data Analyst, Marketing) is in the same career path as the candidate's history, BE GENEROUS (yghawiz). Even if they lack 20-30% of the specific tools, give them a high score (0.7+) because they have the right foundation.
-    2. ROLE MISMATCH: If the job is in a completely different professional world (e.g., a Technical person applying for a Language Teacher role), the score MUST be below 0.3.
-    3. SENIORITY: Adjust slightly for seniority, but prioritize Role Alignment first.
+    MATCHING CRITERIA:
+    1. ROLE ALIGNMENT (CRITICAL): The core job title and professional domain must match. If a candidate is applying for a role in a completely different professional world (e.g., a Graphic Designer applying for a Backend Engineer role, or a Teacher applying for Marketing), the score MUST be extremely low (0.0 to 0.15).
+    2. SKILL MATCH: Evaluate technical skills and tools. Deduct points for missing mandatory skills mentioned in the job description.
+    3. SENIORITY: Consider the years of experience and level (Junior, Mid, Senior) relative to the job requirements.
+    4. ACCURACY: Do NOT be generous. A high score (0.8+) should only be given to candidates who are an excellent fit for this specific position.
     
-    Calculate a similarity score from 0.0 to 1.0 and provide a technical rationale.
+    Calculate a similarity score from 0.0 to 1.0 and provide a technical rationale explaining the match or lack thereof.
     
     Respond with ONLY a JSON object: { "score": number, "rationale": string }
     
     ---
-    CANDIDATE CV:
-    ${cvText}
-    ---
+    JOB TITLE:
+    ${jobTitle}
+    
     JOB DESCRIPTION:
     ${jobDescription}
+    
+    ---
+    CANDIDATE CV:
+    ${cvText}
     ---`;
 
     console.log(`Using Base URL: ${openai.baseURL}`);

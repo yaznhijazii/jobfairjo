@@ -10,7 +10,7 @@ function sleep(ms: number) {
   return new Promise((r) => setTimeout(r, ms));
 }
 
-export async function extractTextFromPDF(buffer: Buffer): Promise<string> {
+export async function extractTextFromDocument(buffer: Buffer, mimetype: string, originalName: string): Promise<string> {
   try {
     // ── Step 1: Upload ──────────────────────────────────────────────────────────
     console.log("--- LlamaParse Start ---");
@@ -18,11 +18,13 @@ export async function extractTextFromPDF(buffer: Buffer): Promise<string> {
       throw new Error("LLAMA_CLOUD_API_KEY is missing!");
     }
     
-    const blob = new Blob([buffer], { type: "application/pdf" });
+    // Ensure we have a valid mimetype for the blob, fallback to common ones if needed
+    const blobMime = mimetype === "application/octet-stream" ? "application/pdf" : mimetype;
+    const blob = new Blob([buffer], { type: blobMime });
     const form = new FormData();
-    form.append("upload_file", blob, "cv.pdf");
+    form.append("upload_file", blob, originalName || "cv.pdf");
 
-    console.log(`[1/3] Uploading PDF (${buffer.length} bytes)...`);
+    console.log(`[1/3] Uploading document: ${originalName} (${buffer.length} bytes, ${blobMime})...`);
 
   const upRes = await fetch(`${BASE}/api/v1/files`, {
     method: "POST",

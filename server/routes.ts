@@ -4,7 +4,7 @@ import multer from "multer";
 import { matchRequestSchema } from "../shared/schema.js";
 import { fetchJoAcademyJobs } from "./services/jobs.js";
 import { matchJobsToCV } from "./services/matching.js";
-import { extractTextFromPDF } from "./services/pdf-parser.js";
+import { extractTextFromDocument } from "./services/pdf-parser.js";
 
 // Configure multer for file uploads (memory storage)
 const upload = multer({
@@ -13,10 +13,21 @@ const upload = multer({
     fileSize: 10 * 1024 * 1024, // 10MB max
   },
   fileFilter: (req, file, cb) => {
-    if (file.mimetype === "application/pdf") {
+    const allowedMimeTypes = [
+      "application/pdf",
+      "application/msword",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "text/plain"
+    ];
+    
+    // Check mimetype or file extension for mobile compatibility
+    const isAllowedMime = allowedMimeTypes.includes(file.mimetype);
+    const isAllowedExt = /\.(pdf|doc|docx)$/i.test(file.originalname);
+
+    if (isAllowedMime || isAllowedExt) {
       cb(null, true);
     } else {
-      cb(new Error("Only PDF files are allowed"));
+      cb(new Error("Only PDF and Word files are allowed"));
     }
   },
 });
@@ -37,9 +48,13 @@ export function registerRoutes(app: Express) {
         return res.status(400).json({ success: false, error: "No file uploaded" });
       }
 
-      const extractedText = await extractTextFromPDF(req.file.buffer);
+      const extractedText = await extractTextFromDocument(
+        req.file.buffer, 
+        req.file.mimetype, 
+        req.file.originalname
+      );
       if (!extractedText || extractedText.length < 50) {
-        return res.status(400).json({ success: false, error: "Insufficient text extracted" });
+        return res.status(400).json({ success: false, error: "Insufficient text extracted from document" });
       }
 
       res.json({ success: true, text: extractedText });

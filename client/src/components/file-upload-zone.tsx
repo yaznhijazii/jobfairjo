@@ -26,8 +26,15 @@ export function FileUploadZone({ onFileSelect, isUploading }: FileUploadZoneProp
     
     const file = e.dataTransfer.files[0];
     if (file) {
-      if (file.type !== "application/pdf") {
-        alert("Please select a PDF file only");
+      const allowedMimeTypes = [
+        "application/pdf",
+        "application/msword",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+      ];
+      const isAllowedExt = /\.(pdf|doc|docx)$/i.test(file.name);
+      
+      if (!allowedMimeTypes.includes(file.type) && !isAllowedExt) {
+        alert("Please select a PDF or Word file");
         return;
       }
       if (file.size > 10 * 1024 * 1024) {
@@ -41,8 +48,15 @@ export function FileUploadZone({ onFileSelect, isUploading }: FileUploadZoneProp
   const handleFileInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.type !== "application/pdf") {
-        alert("Please select a PDF file only");
+      const allowedMimeTypes = [
+        "application/pdf",
+        "application/msword",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+      ];
+      const isAllowedExt = /\.(pdf|doc|docx)$/i.test(file.name);
+
+      if (!allowedMimeTypes.includes(file.type) && !isAllowedExt) {
+        alert("Please select a PDF or Word file");
         return;
       }
       if (file.size > 10 * 1024 * 1024) {
@@ -68,7 +82,7 @@ export function FileUploadZone({ onFileSelect, isUploading }: FileUploadZoneProp
     >
       <input
         type="file"
-        accept=".pdf"
+        accept=".pdf,.doc,.docx"
         onChange={handleFileInput}
         className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
         disabled={isUploading}
@@ -88,7 +102,7 @@ export function FileUploadZone({ onFileSelect, isUploading }: FileUploadZoneProp
           <>
             <FileText className="w-16 h-16 text-primary" />
             <div className="text-center">
-              <p className="text-lg font-medium">Drop your PDF here</p>
+              <p className="text-lg font-medium">Drop your file here</p>
             </div>
           </>
         ) : (
@@ -104,7 +118,7 @@ export function FileUploadZone({ onFileSelect, isUploading }: FileUploadZoneProp
                 or click to browse
               </p>
               <p className="text-xs text-muted-foreground">
-                PDF format only • Max 10MB
+                PDF or Word format • Max 10MB
               </p>
             </div>
           </>
