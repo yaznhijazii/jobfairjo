@@ -9,7 +9,7 @@ import type { CVUploadResponse, MatchResponse, MatchResult, ProcessingStep } fro
 import { FileUploadZone } from "@/components/file-upload-zone";
 import { ProcessingStatus } from "@/components/processing-status";
 import { JobMatchCard } from "@/components/job-match-card";
-import { JobDetailModal } from "@/components/job-detail-modal";
+import { Navbar } from "@/components/navbar";
 
 export default function Home() {
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
@@ -37,7 +37,9 @@ export default function Home() {
       return response.json() as Promise<CVUploadResponse>;
     },
     onSuccess: (data) => {
+      console.log("[Client] CV Upload Success:", data);
       if (data.success && data.text) {
+        console.log(`[Client] Extracted CV text length: ${data.text.length} characters`);
         setCvText(data.text);
         setProcessingStep("extracting");
         toast({
@@ -55,6 +57,7 @@ export default function Home() {
       }
     },
     onError: (error) => {
+      console.error("[Client] CV Upload Error:", error);
       setProcessingStep("error");
       toast({
         title: "Upload Failed",
@@ -72,7 +75,9 @@ export default function Home() {
       return apiRequest<MatchResponse>("POST", "/api/match-jobs", { cvText: text });
     },
     onSuccess: (data) => {
+      console.log("[Client] Matching Success:", data);
       if (data && data.matches && Array.isArray(data.matches)) {
+        console.log(`[Client] Found ${data.matches.length} job matches`);
         setMatches(data.matches);
         setProcessingStep("complete");
         toast({
@@ -114,26 +119,8 @@ export default function Home() {
   const isProcessing = ["uploading", "extracting", "fetching", "analyzing"].includes(processingStep);
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="flex items-center justify-center w-8 h-8 rounded-md bg-primary">
-              <Zap className="w-5 h-5 text-primary-foreground" />
-            </div>
-            <span className="font-bold text-lg">JoAcademy Talent Finder</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <Button variant="ghost" size="sm" data-testid="link-how-it-works">
-              How It Works
-            </Button>
-            <Button variant="ghost" size="sm" data-testid="link-faq">
-              FAQ
-            </Button>
-          </div>
-        </div>
-      </header>
+    <div className="min-h-screen bg-background flex flex-col">
+      <Navbar />
 
       {/* Hero Section */}
       <section className="py-16 px-6">
@@ -171,36 +158,6 @@ export default function Home() {
               )}
             </Card>
 
-            {/* How It Works */}
-            <div className="mt-12 grid md:grid-cols-3 gap-6">
-              <div className="text-center">
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3">
-                  <Upload className="w-6 h-6 text-primary" />
-                </div>
-                <h3 className="font-semibold mb-1">Upload CV</h3>
-                <p className="text-sm text-muted-foreground">
-                  Share your resume in PDF format
-                </p>
-              </div>
-              <div className="text-center">
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3">
-                  <TrendingUp className="w-6 h-6 text-primary" />
-                </div>
-                <h3 className="font-semibold mb-1">AI Analysis</h3>
-                <p className="text-sm text-muted-foreground">
-                  Our AI matches your skills with open roles
-                </p>
-              </div>
-              <div className="text-center">
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3">
-                  <Briefcase className="w-6 h-6 text-primary" />
-                </div>
-                <h3 className="font-semibold mb-1">Get Matches</h3>
-                <p className="text-sm text-muted-foreground">
-                  View top 3 opportunities tailored for you
-                </p>
-              </div>
-            </div>
           </div>
         </section>
       ) : null}
@@ -227,6 +184,27 @@ export default function Home() {
                 Based on deep AI analysis of your resume and {matches[0]?.job ? 'live' : ''} job descriptions
               </p>
             </div>
+
+            {matches.length > 0 && matches[0].score < 0.4 && (
+              <div className="max-w-3xl mx-auto mb-10">
+                <Card className="p-6 border-amber-200 bg-amber-50 text-amber-900">
+                  <div className="flex gap-4">
+                    <AlertCircle className="w-6 h-6 text-amber-600 flex-shrink-0" />
+                    <div>
+                      <h3 className="font-bold text-lg mb-2">Didn't find a role that matches your profile?</h3>
+                      <p className="mb-4">
+                        Current matches are below 40%. If you'd like us to keep your profile on file and reach out when a more suitable opportunity opens up, please fill out our general interest form:
+                      </p>
+                      <Button asChild variant="default" className="bg-amber-600 hover:bg-amber-700">
+                        <a href="https://joacademy123.bitrix24.site/crm_form_o2o4v/" target="_blank" rel="noreferrer">
+                          Fill Interest Form
+                        </a>
+                      </Button>
+                    </div>
+                  </div>
+                </Card>
+              </div>
+            )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
               {matches.map((match, index) => (
@@ -263,7 +241,7 @@ export default function Home() {
       {/* Footer */}
       <footer className="border-t py-8 px-6 mt-auto">
         <div className="max-w-7xl mx-auto text-center text-sm text-muted-foreground">
-          <p>© 2025 JoAcademy</p>
+          <p>© 2026 Jo Academy</p>
         </div>
       </footer>
     </div>

@@ -22,6 +22,23 @@ const upload = multer({
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  console.log(`Current Environment (NODE_ENV): ${process.env.NODE_ENV}`);
+  console.log(`Express Environment (app.get('env')): ${app.get('env')}`);
+
+  app.get("/", (_req, res, next) => {
+    // If it's an API request or something specific, let it pass
+    // Otherwise, for testing, we can return a simple message or let Vite handle it
+    // Let's just log and let Vite handle it usually, but for debug:
+    console.log("Root route hit");
+    next(); 
+  });
+
+  /**
+   * GET /api/health
+   */
+  app.get("/api/health", (_req, res) => {
+    res.json({ status: "ok", env: app.get("env") });
+  });
   /**
    * POST /api/upload-cv
    * Upload and extract text from PDF resume
@@ -37,7 +54,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Extract text from PDF
       const extractedText = await extractTextFromPDF(req.file.buffer);
-
+      console.log(`Extracted CV text: ${extractedText}`);
       if (!extractedText || extractedText.length < 50) {
         return res.status(400).json({
           success: false,

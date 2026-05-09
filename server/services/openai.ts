@@ -1,13 +1,17 @@
+import "dotenv/config";
 import OpenAI from "openai";
 
-// Using the javascript_openai blueprint
-// the newest OpenAI model is "gpt-5" which was released August 7, 2025. do not change this unless explicitly requested by the user
+console.log(`--- SERVER VERSION 2.0 IS READY ---`);
+console.log(`Forcing Base URL: https://api.openai.com/v1`);
+
 const openai = new OpenAI({ 
-  apiKey: process.env.OPENAI_API_KEY 
+  apiKey: process.env.OPENAI_API_KEY,
+  baseURL: 'https://api.openai.com/v1', // HARDCODED TO BYPASS ENV ISSUES
 });
 
 export interface MatchScore {
   score: number; // 0-1 similarity score
+  rationale: string; // Explanation of the score
 }
 
 /**
@@ -17,42 +21,34 @@ export interface MatchScore {
 export async function calculateSimilarityScore(
   cvText: string,
   jobDescription: string
-): Promise<number> {
+): Promise<MatchScore> {
   try {
-    const prompt = `You are an expert recruitment AI. Analyze how well this candidate's CV matches the job description.
+    const prompt = `You are an intelligent recruitment systems analyzer. Your goal is to identify if a candidate's career path aligns with a job role.
+    
+    MATCHING STRATEGY:
+    1. ROLE ALIGNMENT: If the Job Title or core role (e.g., Software Engineer, Data Analyst, Marketing) is in the same career path as the candidate's history, BE GENEROUS (yghawiz). Even if they lack 20-30% of the specific tools, give them a high score (0.7+) because they have the right foundation.
+    2. ROLE MISMATCH: If the job is in a completely different professional world (e.g., a Technical person applying for a Language Teacher role), the score MUST be below 0.3.
+    3. SENIORITY: Adjust slightly for seniority, but prioritize Role Alignment first.
+    
+    Calculate a similarity score from 0.0 to 1.0 and provide a technical rationale.
+    
+    Respond with ONLY a JSON object: { "score": number, "rationale": string }
+    
+    ---
+    CANDIDATE CV:
+    ${cvText}
+    ---
+    JOB DESCRIPTION:
+    ${jobDescription}
+    ---`;
 
-Focus on:
-- Relevant skills and technologies mentioned
-- Years of experience and seniority level
-- Domain expertise and industry knowledge
-- Educational background
-- Transferable skills (consider skills that can be learned quickly)
-
-Be realistic but optimistic - if a candidate has 60-70% of the required skills, they could still be a strong match.
-
-Provide a similarity score from 0.0 to 1.0 where:
-- 0.9-1.0 = Exceptional match, candidate exceeds requirements
-- 0.7-0.8 = Strong match, candidate meets most requirements
-- 0.5-0.6 = Good match, candidate has relevant experience
-- 0.3-0.4 = Moderate match, some transferable skills
-- 0.0-0.2 = Poor match, minimal relevant experience
-
-Respond with ONLY a JSON object: { "score": number }
-
----
-CANDIDATE CV:
-${cvText.substring(0, 5000)}
----
-JOB DESCRIPTION:
-${jobDescription.substring(0, 3000)}
----`;
-
+    console.log(`Using Base URL: ${openai.baseURL}`);
     const response = await openai.chat.completions.create({
-      model: "gpt-5",
+      model: process.env.OPENAI_MODEL || "gpt-4o",
       messages: [
         {
           role: "system",
-          content: "You are an expert recruitment AI that finds potential in candidates. Consider transferable skills and learning potential. Be optimistic but realistic. Always respond with valid JSON only."
+          content: "You are a technical matching engine. You prioritize domain relevance. Always respond with valid JSON only."
         },
         {
           role: "user",
@@ -60,35 +56,53 @@ ${jobDescription.substring(0, 3000)}
         }
       ],
       response_format: { type: "json_object" },
-      max_completion_tokens: 100,
+      // max_tokens: 200,
     });
 
     const result = JSON.parse(response.choices[0].message.content || "{}");
     const score = parseFloat(result.score) || 0;
+    const rationale = result.rationale || "Matching analysis completed based on candidate's skills and job requirements.";
     
+    console.log(`--- AI Match Result ---`);
+    console.log(`Job: ${jobDescription}`);
+    console.log(`Score: ${score}`);
+    console.log(`Rationale: ${rationale}`);
+    console.log(`-----------------------`);
+
     // Ensure score is between 0 and 1
-    return Math.max(0, Math.min(1, score));
-  } catch (error) {
-    console.error("Error calculating similarity score:", error);
+    return {
+      score: Math.max(0, Math.min(1, score)),
+      rationale: rationale
+    };
+  } catch (error: any) {
+    console.error("AI Error Details:");
+    console.error(`Status: ${error.status}`);
+    console.error(`Message: ${error.message}`);
+    if (error.response) {
+      console.error(`Response Data: ${JSON.stringify(error.response.data)}`);
+    }
+    
     // Return a low score on error rather than failing completely
-    return 0.1;
+    return {
+      score: 0.1,
+      rationale: "Automated analysis was unable to reach the AI engine. This score represents a baseline semantic match."
+    };
   }
 }
 
-/**
- * Generate embeddings for text using OpenAI
- * Used for quick semantic filtering before deep analysis
- */
 export async function generateEmbedding(text: string): Promise<number[]> {
   try {
+    //console.log(`[AI] Generating embedding for text (length: ${text.length} chars)`);
+    
     const response = await openai.embeddings.create({
       model: "text-embedding-3-small",
-      input: text.substring(0, 8000), // Limit input length
+      input: text,
     });
 
+    console.log(`[AI] Embedding generated successfully`);
     return response.data[0].embedding;
-  } catch (error) {
-    console.error("Error generating embedding:", error);
+  } catch (error: any) {
+    console.error("[AI] Error generating embedding:", error.message);
     // Return zero vector on error
     return new Array(1536).fill(0);
   }

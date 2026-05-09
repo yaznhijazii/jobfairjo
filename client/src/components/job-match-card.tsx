@@ -71,8 +71,11 @@ export function JobMatchCard({ match, onViewDetails, animationDelay = 0 }: JobMa
         
         <div className="flex items-center gap-1 mt-2">
           <Award className="w-3 h-3 text-primary" />
-          <span className="text-xs text-muted-foreground">Deep AI Analysis</span>
+          <span className="text-xs text-muted-foreground font-semibold">AI Insight:</span>
         </div>
+        <p className="text-xs text-muted-foreground mt-1 italic line-clamp-2" data-testid={`text-rationale-${rank}`}>
+          "{match.rationale}"
+        </p>
       </div>
 
       {/* Divider */}

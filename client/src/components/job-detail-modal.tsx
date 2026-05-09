@@ -85,8 +85,12 @@ export function JobDetailModal({ match, onClose }: JobDetailModalProps) {
                 style={{ width: `${percentageScore}%` }}
               />
             </div>
-            <p className="text-xs text-muted-foreground mt-2">
-              Based on deep AI analysis comparing your resume with job requirements
+            <p className="text-sm font-medium mt-3 flex items-center gap-2">
+              <Award className="w-4 h-4 text-primary" />
+              AI Matching Rationale:
+            </p>
+            <p className="text-sm text-muted-foreground mt-1 italic bg-primary/5 p-3 rounded-md border border-primary/10" data-testid="text-modal-rationale">
+              "{match.rationale}"
             </p>
           </div>
 

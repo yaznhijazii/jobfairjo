@@ -29,18 +29,24 @@ export function ProcessingStatus({ step, fileName }: ProcessingStatusProps) {
 
       {/* Step Indicators */}
       <div className="relative">
-        {/* Progress Line */}
-        <div className="absolute top-6 left-0 right-0 h-0.5 bg-border" style={{ left: '2rem', right: '2rem' }} />
+        {/* Progress Line Background */}
+        <div className="absolute top-6 left-0 right-0 h-1 bg-muted rounded-full z-0" style={{ left: '2rem', right: '2rem' }} />
+        
+        {/* Animated Progress Line */}
         <div 
-          className="absolute top-6 left-0 h-0.5 bg-primary transition-all duration-500"
+          className="absolute top-6 left-0 h-1 rounded-full transition-all duration-1000 ease-in-out z-0"
           style={{ 
             left: '2rem',
-            width: `calc(${(currentStepIndex / (steps.length - 1)) * 100}% - 4rem)`
+            width: `calc(${(currentStepIndex / (steps.length - 1)) * 100}%)`,
+            background: 'linear-gradient(90deg, hsl(var(--primary)) 0%, hsl(var(--primary)/0.6) 100%)',
+            boxShadow: '0 0 10px hsl(var(--primary)/0.4)',
           }}
-        />
+        >
+          <div className="absolute right-0 top-0 h-full w-4 bg-white/30 blur-sm animate-pulse rounded-full" />
+        </div>
 
         {/* Steps */}
-        <div className="relative grid grid-cols-4 gap-4">
+        <div className="relative z-10 grid grid-cols-4 gap-4">
           {steps.map((s, index) => {
             const isCompleted = index < currentStepIndex;
             const isCurrent = index === currentStepIndex;
@@ -49,27 +55,30 @@ export function ProcessingStatus({ step, fileName }: ProcessingStatusProps) {
               <div key={s.id} className="flex flex-col items-center">
                 <div
                   className={cn(
-                    "w-12 h-12 rounded-full border-2 flex items-center justify-center mb-3 transition-all duration-300",
+                    "w-12 h-12 rounded-full border-2 flex items-center justify-center mb-3 transition-all duration-300 shadow-sm",
                     isCompleted && "bg-primary border-primary",
-                    isCurrent && "border-primary bg-primary/10 scale-110",
-                    !isCompleted && !isCurrent && "border-border bg-background"
+                    isCurrent && "border-primary bg-background shadow-[0_0_15px_rgba(var(--primary),0.2)] scale-110",
+                    !isCompleted && !isCurrent && "border-muted bg-background"
                   )}
                 >
                   {isCompleted ? (
                     <Check className="w-6 h-6 text-primary-foreground" />
                   ) : isCurrent ? (
-                    <Loader2 className="w-6 h-6 text-primary animate-spin" />
+                    <div className="relative flex items-center justify-center">
+                      <Loader2 className="w-6 h-6 text-primary animate-spin" />
+                      <div className="absolute inset-0 bg-primary/5 rounded-full animate-ping" />
+                    </div>
                   ) : (
-                    <span className="text-sm font-medium text-muted-foreground">{index + 1}</span>
+                    <span className="text-sm font-semibold text-muted-foreground">{index + 1}</span>
                   )}
                 </div>
                 <p className={cn(
-                  "text-sm font-medium text-center",
-                  isCurrent ? "text-foreground" : "text-muted-foreground"
+                  "text-sm font-semibold text-center transition-colors duration-300",
+                  isCurrent ? "text-primary" : isCompleted ? "text-foreground" : "text-muted-foreground"
                 )}>
                   {s.label}
                 </p>
-                <p className="text-xs text-muted-foreground text-center mt-1">
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground/70 text-center mt-1 font-medium">
                   {s.description}
                 </p>
               </div>

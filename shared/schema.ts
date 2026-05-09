@@ -16,6 +16,7 @@ export const matchResultSchema = z.object({
   job: jobSchema,
   score: z.number().min(0).max(1),
   rank: z.number().int().positive(),
+  rationale: z.string(), // AI's explanation for the score
 });
 
 export type MatchResult = z.infer<typeof matchResultSchema>;
