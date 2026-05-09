@@ -1,12 +1,13 @@
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
+import { Users } from "lucide-react";
 
 export function Navbar() {
   const [location] = useLocation();
 
   const navItems = [
     { href: "/", label: "Home" },
-    { href: "/how-it-works", label: "How It Works" },
+    { href: "/recruitment-team", label: "Recruitment Team" },
   ];
 
   return (
@@ -25,17 +26,16 @@ export function Navbar() {
           </div>
         </Link>
 
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-6 sm:gap-8">
           {navItems.map((item) => (
             <Link key={item.href} href={item.href}>
               <span
                 className={cn(
-                  "text-sm font-medium transition-colors cursor-pointer hover:text-primary",
-                  location === item.href
-                    ? "text-primary"
-                    : "text-muted-foreground"
+                  "text-sm font-medium transition-colors cursor-pointer hover:text-primary flex items-center gap-2",
+                  location === item.href ? "text-primary" : "text-muted-foreground"
                 )}
               >
+                {item.label === "Recruitment Team" && <Users className="w-4 h-4" />}
                 {item.label}
               </span>
             </Link>
