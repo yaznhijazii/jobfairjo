@@ -9,6 +9,7 @@ import type { CVUploadResponse, MatchResponse, MatchResult, ProcessingStep } fro
 import { FileUploadZone } from "@/components/file-upload-zone";
 import { ProcessingStatus } from "@/components/processing-status";
 import { JobMatchCard } from "@/components/job-match-card";
+import { JobDetailModal } from "@/components/job-detail-modal";
 import { Navbar } from "@/components/navbar";
 
 export default function Home() {
