@@ -11,16 +11,18 @@ function sleep(ms: number) {
 }
 
 export async function extractTextFromPDF(buffer: Buffer): Promise<string> {
-  // ── Step 1: Upload ──────────────────────────────────────────────────────────
-  console.log("--- LlamaParse (undici) ---");
-  if (!LLAMA_API_KEY) {
-    console.error("LLAMA_CLOUD_API_KEY is missing from environment variables!");
-    throw new Error("LlamaParse API Key is not configured");
-  }
-  console.log(`[1/3] Uploading PDF (${buffer.length} bytes)...`);
+  try {
+    // ── Step 1: Upload ──────────────────────────────────────────────────────────
+    console.log("--- LlamaParse Start ---");
+    if (!LLAMA_API_KEY) {
+      throw new Error("LLAMA_CLOUD_API_KEY is missing!");
+    }
+    
+    const blob = new Blob([buffer], { type: "application/pdf" });
+    const form = new FormData();
+    form.append("upload_file", blob, "cv.pdf");
 
-  const form = new FormData();
-  form.append("upload_file", new File([Uint8Array.from(buffer)], "cv.pdf", { type: "application/pdf" }));
+    console.log(`[1/3] Uploading PDF (${buffer.length} bytes)...`);
 
   const upRes = await fetch(`${BASE}/api/v1/files`, {
     method: "POST",
@@ -94,5 +96,9 @@ export async function extractTextFromPDF(buffer: Buffer): Promise<string> {
     }
   }
 
-  throw new Error("Job timed out after 60 seconds.");
+    throw new Error("Job timed out after 60 seconds.");
+  } catch (error) {
+    console.error("CRITICAL ERROR in extractTextFromPDF:", error);
+    throw error;
+  }
 }
