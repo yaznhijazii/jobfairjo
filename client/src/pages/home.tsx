@@ -84,6 +84,9 @@ export default function Home() {
       setProcessingStep("analyzing");
       return apiRequest<MatchResponse>("POST", "/api/match-jobs", { cvText: text });
     },
+    // Adding retry logic for connection stability on mobile/ad-blockers
+    retry: 2,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 3000),
     onSuccess: (data) => {
       console.log("[Client] Matching Success:", data);
       if (data && data.matches && Array.isArray(data.matches)) {
