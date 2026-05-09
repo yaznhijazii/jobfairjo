@@ -185,37 +185,41 @@ export default function Home() {
               </p>
             </div>
 
-            {matches.length > 0 && matches[0].score < 0.4 && (
+            {/* Low Match Score State: Show ONLY interest form, no matches */}
+            {matches.length > 0 && matches[0].score < 0.4 ? (
               <div className="max-w-3xl mx-auto mb-10">
-                <Card className="p-6 border-amber-200 bg-amber-50 text-amber-900">
-                  <div className="flex gap-4">
-                    <AlertCircle className="w-6 h-6 text-amber-600 flex-shrink-0" />
-                    <div>
-                      <h3 className="font-bold text-lg mb-2">Didn't find a role that matches your profile?</h3>
-                      <p className="mb-4">
-                        Current matches are below 40%. If you'd like us to keep your profile on file and reach out when a more suitable opportunity opens up, please fill out our general interest form:
-                      </p>
-                      <Button asChild variant="default" className="bg-amber-600 hover:bg-amber-700">
-                        <a href="https://joacademy123.bitrix24.site/crm_form_o2o4v/" target="_blank" rel="noreferrer">
-                          Fill Interest Form
-                        </a>
-                      </Button>
+                <Card className="p-8 border-amber-200 bg-amber-50 text-amber-900 shadow-lg text-center">
+                  <div className="flex flex-col items-center gap-4">
+                    <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mb-2">
+                      <AlertCircle className="w-10 h-10 text-amber-600" />
                     </div>
+                    <h3 className="font-bold text-2xl mb-2">Build Your Future at JoAcademy</h3>
+                    <p className="text-lg mb-6 max-w-xl">
+                      We didn't find a direct match for your current profile among our open roles. 
+                      However, we're always looking for talented individuals! Please share your details 
+                      via our interest form, and we'll reach out when a suitable position opens up.
+                    </p>
+                    <Button asChild variant="default" size="lg" className="bg-amber-600 hover:bg-amber-700 text-white px-8 h-14 text-lg">
+                      <a href="https://joacademy123.bitrix24.site/crm_form_o2o4v/" target="_blank" rel="noreferrer">
+                        Fill General Interest Form
+                      </a>
+                    </Button>
                   </div>
                 </Card>
               </div>
+            ) : (
+              /* High Match Score State: Show matches */
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                {matches.map((match, index) => (
+                  <JobMatchCard
+                    key={index}
+                    match={match}
+                    onViewDetails={() => setSelectedJob(match)}
+                    animationDelay={index * 100}
+                  />
+                ))}
+              </div>
             )}
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-              {matches.map((match, index) => (
-                <JobMatchCard
-                  key={index}
-                  match={match}
-                  onViewDetails={() => setSelectedJob(match)}
-                  animationDelay={index * 100}
-                />
-              ))}
-            </div>
 
             <div className="text-center">
               <Button 

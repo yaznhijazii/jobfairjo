@@ -27,24 +27,31 @@ export async function matchJobsToCV(cvText: string, jobs: Job[]): Promise<MatchR
   // Stage 1: Quick Semantic Filtering using embeddings
   const cvEmbedding = await generateEmbedding(cvText);
   
-  // Generate or retrieve cached embeddings for all jobs
-  const jobScores = await Promise.all(
-    jobs.map(async (job) => {
-      const cacheKey = getJobCacheKey(job);
-      const jobText = `${job.title} ${job.department} ${job.location}`;
-      
-      // Try to get from cache, otherwise generate and cache
-      let jobEmbedding = jobEmbeddingsCache.get(cacheKey);
-      if (!jobEmbedding) {
-        jobEmbedding = await generateEmbedding(jobText);
-        jobEmbeddingsCache.set(cacheKey, jobEmbedding);
-      }
-      
-      const similarity = cosineSimilarity(cvEmbedding, jobEmbedding);
-      
-      return { job, similarity };
-    })
-  );
+  // Generate or retrieve cached embeddings for jobs
+  // We use a simple loop or chunking to avoid 100+ concurrent network requests
+  console.log(`[Matching] Generating embeddings for ${jobs.length} jobs...`);
+  const jobScores = [];
+  const batchSize = 10;
+  
+  for (let i = 0; i < jobs.length; i += batchSize) {
+    const batch = jobs.slice(i, i + batchSize);
+    const batchResults = await Promise.all(
+      batch.map(async (job) => {
+        const cacheKey = getJobCacheKey(job);
+        const jobText = `${job.title} ${job.department} ${job.location}`;
+        
+        let jobEmbedding = jobEmbeddingsCache.get(cacheKey);
+        if (!jobEmbedding) {
+          jobEmbedding = await generateEmbedding(jobText);
+          jobEmbeddingsCache.set(cacheKey, jobEmbedding);
+        }
+        
+        const similarity = cosineSimilarity(cvEmbedding, jobEmbedding);
+        return { job, similarity };
+      })
+    );
+    jobScores.push(...batchResults);
+  }
 
   // Sort by similarity and take top 10 candidates
   const topCandidates = jobScores

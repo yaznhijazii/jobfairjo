@@ -27,58 +27,61 @@ export function ProcessingStatus({ step, fileName }: ProcessingStatusProps) {
         )}
       </div>
 
-      {/* Step Indicators */}
+      {/* Step Indicators Container */}
       <div className="relative">
-        {/* Progress Line Background */}
-        <div className="absolute top-6 left-0 right-0 h-1 bg-muted rounded-full z-0" style={{ left: '2rem', right: '2rem' }} />
+        {/* Progress Line Background Layer */}
+        <div className="absolute top-5 sm:top-6 left-[12.5%] right-[12.5%] h-0.5 sm:h-1 z-0 hidden sm:block">
+          <div className="w-full h-full bg-muted/50 rounded-full" />
+        </div>
         
-        {/* Animated Progress Line */}
-        <div 
-          className="absolute top-6 left-0 h-1 rounded-full transition-all duration-1000 ease-in-out z-0"
-          style={{ 
-            left: '2rem',
-            width: `calc(${(currentStepIndex / (steps.length - 1)) * 100}%)`,
-            background: 'linear-gradient(90deg, hsl(var(--primary)) 0%, hsl(var(--primary)/0.6) 100%)',
-            boxShadow: '0 0 10px hsl(var(--primary)/0.4)',
-          }}
-        >
-          <div className="absolute right-0 top-0 h-full w-4 bg-white/30 blur-sm animate-pulse rounded-full" />
+        {/* Animated Progress Line Layer */}
+        <div className="absolute top-5 sm:top-6 left-[12.5%] right-[12.5%] h-0.5 sm:h-1 z-0 hidden sm:block">
+          <div 
+            className="h-full rounded-full transition-all duration-1000 ease-in-out"
+            style={{ 
+              width: `${(currentStepIndex / (steps.length - 1)) * 100}%`,
+              background: 'linear-gradient(90deg, hsl(var(--primary)) 0%, hsl(var(--primary)/0.6) 100%)',
+              boxShadow: '0 0 10px hsl(var(--primary)/0.4)',
+            }}
+          >
+            <div className="absolute right-0 top-0 h-full w-4 bg-white/30 blur-sm animate-pulse rounded-full" />
+          </div>
         </div>
 
-        {/* Steps */}
-        <div className="relative z-10 grid grid-cols-4 gap-4">
+        {/* Steps Layer */}
+        <div className="relative z-10 flex sm:grid sm:grid-cols-4 gap-2 sm:gap-4 overflow-x-auto sm:overflow-visible pb-4 sm:pb-0 scrollbar-hide">
           {steps.map((s, index) => {
             const isCompleted = index < currentStepIndex;
             const isCurrent = index === currentStepIndex;
             
             return (
-              <div key={s.id} className="flex flex-col items-center">
+              <div key={s.id} className="flex flex-col items-center min-w-[100px] sm:min-w-0 flex-1">
                 <div
                   className={cn(
-                    "w-12 h-12 rounded-full border-2 flex items-center justify-center mb-3 transition-all duration-300 shadow-sm",
+                    "w-10 h-10 sm:w-12 sm:h-12 rounded-full border-2 flex items-center justify-center mb-3 transition-all duration-300 shadow-sm relative z-20",
                     isCompleted && "bg-primary border-primary",
                     isCurrent && "border-primary bg-background shadow-[0_0_15px_rgba(var(--primary),0.2)] scale-110",
                     !isCompleted && !isCurrent && "border-muted bg-background"
                   )}
                 >
                   {isCompleted ? (
-                    <Check className="w-6 h-6 text-primary-foreground" />
+                    <Check className="w-5 h-5 sm:w-6 sm:h-6 text-primary-foreground" />
                   ) : isCurrent ? (
                     <div className="relative flex items-center justify-center">
-                      <Loader2 className="w-6 h-6 text-primary animate-spin" />
+                      <Loader2 className="w-5 h-5 sm:w-6 sm:h-6 text-primary animate-spin" />
                       <div className="absolute inset-0 bg-primary/5 rounded-full animate-ping" />
                     </div>
                   ) : (
-                    <span className="text-sm font-semibold text-muted-foreground">{index + 1}</span>
+                    <span className="text-xs sm:text-sm font-semibold text-muted-foreground">{index + 1}</span>
                   )}
                 </div>
                 <p className={cn(
-                  "text-sm font-semibold text-center transition-colors duration-300",
+                  "text-[11px] sm:text-sm font-semibold text-center transition-colors duration-300 whitespace-nowrap",
                   isCurrent ? "text-primary" : isCompleted ? "text-foreground" : "text-muted-foreground"
                 )}>
                   {s.label}
                 </p>
-                <p className="text-[10px] uppercase tracking-wider text-muted-foreground/70 text-center mt-1 font-medium">
+                <p className="text-[8px] sm:text-[10px] uppercase tracking-wider text-muted-foreground/70 text-center mt-1 font-medium hidden sm:block">
                   {s.description}
                 </p>
               </div>

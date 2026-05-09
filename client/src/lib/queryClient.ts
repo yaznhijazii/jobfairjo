@@ -16,11 +16,30 @@ export async function apiRequest<T = any>(
     method,
     headers: data ? { "Content-Type": "application/json" } : {},
     body: data ? JSON.stringify(data) : undefined,
-    credentials: "include",
+    // Using omit for credentials if not strictly needed can avoid some CORS/302 issues on mobile
+    // If sessions/cookies are added later, this can be changed back to 'include'
+    credentials: "omit", 
   });
 
-  await throwIfResNotOk(res);
-  return await res.json();
+  if (!res.ok) {
+    const text = await res.text();
+    let errorMessage = `Server error (${res.status})`;
+    try {
+      const json = JSON.parse(text);
+      errorMessage = json.error || json.message || errorMessage;
+    } catch (e) {
+      errorMessage = text || res.statusText || errorMessage;
+    }
+    throw new Error(errorMessage);
+  }
+
+  const text = await res.text();
+  try {
+    return JSON.parse(text) as T;
+  } catch (e) {
+    console.error("Failed to parse response as JSON:", text.slice(0, 200));
+    throw new Error("Received invalid response from server. This may be due to a network redirect.");
+  }
 }
 
 type UnauthorizedBehavior = "returnNull" | "throw";

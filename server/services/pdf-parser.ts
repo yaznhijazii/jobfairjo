@@ -67,36 +67,45 @@ export async function extractTextFromPDF(buffer: Buffer): Promise<string> {
   // ── Step 3: Poll until COMPLETED ───────────────────────────────────────────
   console.log("[3/3] Polling for result...");
 
-  for (let i = 1; i <= 30; i++) {
-    await sleep(2000);
+    for (let i = 1; i <= 25; i++) { // Slightly reduced iterations to ensure we finish within 60s
+      console.log(`[3/3] Poll ${i}/25: Waiting 2s...`);
+      await sleep(2000);
 
-    const pollRes = await fetch(
-      `${BASE}/api/v2/parse/${jobId}?expand=markdown_full`,
-      { headers: { Authorization: `Bearer ${LLAMA_API_KEY}` } }
-    );
+      const pollRes = await fetch(
+        `${BASE}/api/v2/parse/${jobId}?expand=markdown_full`,
+        { headers: { Authorization: `Bearer ${LLAMA_API_KEY}` } }
+      );
 
-    const pollText = await pollRes.text();
-    const pollJson = JSON.parse(pollText) as {
-      job?: { status: string };
-      markdown_full?: string;
-    };
+      if (!pollRes.ok) {
+        console.warn(`[3/3] Poll ${i} failed (${pollRes.status})`);
+        continue;
+      }
 
-    const status = pollJson.job?.status || "UNKNOWN";
-    console.log(`[3/3] Poll ${i}: ${status}`);
+      const pollText = await pollRes.text();
+      let pollJson;
+      try {
+        pollJson = JSON.parse(pollText);
+      } catch (e) {
+        console.error(`[3/3] Failed to parse poll response: ${pollText.slice(0, 100)}`);
+        continue;
+      }
 
-    if (status === "COMPLETED") {
-      const text = (pollJson.markdown_full || "").trim();
-      if (!text) throw new Error("COMPLETED but no markdown_full in response.");
-      console.log(`--- SUCCESS: ${text.length} characters ---`);
-      return text;
+      const status = pollJson.job?.status || "UNKNOWN";
+      console.log(`[3/3] Poll ${i}: ${status}`);
+
+      if (status === "COMPLETED") {
+        const text = (pollJson.markdown_full || "").trim();
+        if (!text) throw new Error("COMPLETED but no markdown_full in response.");
+        console.log(`--- SUCCESS: ${text.length} characters extracted ---`);
+        return text;
+      }
+
+      if (status === "FAILED" || status === "CANCELLED") {
+        throw new Error(`Job ended with status: ${status}. Response: ${pollText}`);
+      }
     }
 
-    if (status === "FAILED" || status === "CANCELLED") {
-      throw new Error(`Job ended with status: ${status}. Response: ${pollText}`);
-    }
-  }
-
-    throw new Error("Job timed out after 60 seconds.");
+    throw new Error("PDF parsing timed out. Please try again with a smaller file or a different CV.");
   } catch (error) {
     console.error("CRITICAL ERROR in extractTextFromPDF:", error);
     throw error;

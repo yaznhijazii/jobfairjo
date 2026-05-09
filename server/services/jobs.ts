@@ -81,13 +81,16 @@ export async function fetchJoAcademyJobs(): Promise<Job[]> {
       }
     }
 
-    console.log(`Fetched ${jobs.length} jobs. Starting enrichment...`);
+    console.log(`Fetched ${jobs.length} jobs. Starting enrichment for top 10...`);
 
-    // Enrich top jobs (or all if count is reasonable)
-    const enrichedJobs = await Promise.all(jobs.slice(0, 15).map(async (job) => {
+    // Enrich top jobs concurrently but limit to a reasonable number to avoid timeouts
+    // We only enrich the top 10 to ensure we stay within Vercel's execution limits
+    const enrichCount = Math.min(jobs.length, 10);
+    const enrichedJobs = await Promise.all(jobs.slice(0, enrichCount).map(async (job) => {
       if (job.link) {
         try {
-          const res = await fetch(job.link);
+          const enrichStart = Date.now();
+          const res = await fetch(job.link, { signal: AbortSignal.timeout(5000) }); // 5s timeout per job
           const html = await res.text();
           const $ = cheerio.load(html);
           
@@ -102,12 +105,18 @@ export async function fetchJoAcademyJobs(): Promise<Job[]> {
           if (content.trim()) {
             job.description = content.trim().substring(0, 5000);
           }
+          console.log(`Enriched job: ${job.title} (${Date.now() - enrichStart}ms)`);
         } catch (e) {
-          console.error(`Failed to enrich job ${job.title}`);
+          console.error(`Failed to enrich job ${job.title}:`, e instanceof Error ? e.message : e);
         }
       }
       return job;
     }));
+
+    // Add the rest of the jobs without enrichment
+    if (jobs.length > enrichCount) {
+      enrichedJobs.push(...jobs.slice(enrichCount));
+    }
 
     // Update cache
     jobsCache = { jobs: enrichedJobs, timestamp: Date.now() };

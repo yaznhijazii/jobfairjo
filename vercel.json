@@ -1,5 +1,6 @@
 {
   "version": 2,
+  "trailingSlash": false,
   "builds": [
     {
       "src": "package.json",
@@ -22,7 +23,7 @@
     },
     {
       "src": "/(.*)",
-      "dest": "/$1"
+      "dest": "/index.html"
     }
   ]
 }
