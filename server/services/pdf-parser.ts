@@ -13,7 +13,11 @@ function sleep(ms: number) {
 export async function extractTextFromPDF(buffer: Buffer): Promise<string> {
   // ── Step 1: Upload ──────────────────────────────────────────────────────────
   console.log("--- LlamaParse (undici) ---");
-  console.log("[1/3] Uploading PDF...");
+  if (!LLAMA_API_KEY) {
+    console.error("LLAMA_CLOUD_API_KEY is missing from environment variables!");
+    throw new Error("LlamaParse API Key is not configured");
+  }
+  console.log(`[1/3] Uploading PDF (${buffer.length} bytes)...`);
 
   const form = new FormData();
   form.append("upload_file", new File([Uint8Array.from(buffer)], "cv.pdf", { type: "application/pdf" }));
