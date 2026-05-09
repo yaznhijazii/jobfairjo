@@ -3,9 +3,7 @@
  * Uses Node.js 22 built-in globals: fetch, FormData, File
  */
 
-const LLAMA_API_KEY =
-  process.env.LLAMA_CLOUD_API_KEY ||
-  "llx-7w9nnOyuuIrynFyL8t5ArKPPAltCMeJMdnDGODo4FjR7Mx2R";
+const LLAMA_API_KEY = process.env.LLAMA_CLOUD_API_KEY;
 const BASE = "https://api.cloud.llamaindex.ai";
 
 function sleep(ms: number) {
