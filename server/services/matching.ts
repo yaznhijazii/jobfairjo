@@ -1,5 +1,5 @@
-import type { Job, MatchResult } from "../../shared/schema";
-import { generateEmbedding, cosineSimilarity, calculateSimilarityScore } from "./openai";
+import type { Job, MatchResult } from "../../shared/schema.js";
+import { generateEmbedding, cosineSimilarity, calculateSimilarityScore } from "./openai.js";
 
 // Cache for job embeddings to avoid regenerating on every request
 const jobEmbeddingsCache = new Map<string, number[]>();

@@ -1,10 +1,10 @@
 import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import multer from "multer";
-import { matchRequestSchema } from "../shared/schema";
-import { fetchJoAcademyJobs } from "./services/jobs";
-import { matchJobsToCV } from "./services/matching";
-import { extractTextFromPDF } from "./services/pdf-parser";
+import { matchRequestSchema } from "../shared/schema.js";
+import { fetchJoAcademyJobs } from "./services/jobs.js";
+import { matchJobsToCV } from "./services/matching.js";
+import { extractTextFromPDF } from "./services/pdf-parser.js";
 
 // Configure multer for file uploads (memory storage)
 const upload = multer({
