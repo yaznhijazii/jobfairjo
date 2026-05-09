@@ -193,21 +193,24 @@ export default function Home() {
       )}
 
       {/* Results Section */}
-      {processingStep === "complete" && matches.length > 0 && (
+      {processingStep === "complete" && (
         <section ref={resultsRef} className="px-6 pb-16">
           <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-8">
-              <div className="inline-flex items-center gap-2 text-green-600 mb-2">
-                <CheckCircle2 className="w-6 h-6" />
-                <h2 className="text-2xl font-semibold">Your Top Matches</h2>
+            {/* Show Results Header only if there are high matches */}
+            {matches.length > 0 && matches[0].score >= 0.4 && (
+              <div className="text-center mb-8">
+                <div className="inline-flex items-center gap-2 text-green-600 mb-2">
+                  <CheckCircle2 className="w-6 h-6" />
+                  <h2 className="text-2xl font-semibold">Your Top Matches</h2>
+                </div>
+                <p className="text-muted-foreground">
+                  Based on deep AI analysis of your resume and {matches[0]?.job ? 'live' : ''} job descriptions
+                </p>
               </div>
-              <p className="text-muted-foreground">
-                Based on deep AI analysis of your resume and {matches[0]?.job ? 'live' : ''} job descriptions
-              </p>
-            </div>
+            )}
 
-            {/* Low Match Score State: Show ONLY interest form, no matches */}
-            {matches.length > 0 && matches[0].score < 0.4 ? (
+            {/* Low Match Score State: Show if no matches found or if top match is < 40% */}
+            {matches.length === 0 || matches[0].score < 0.4 ? (
               <div className="max-w-2xl mx-auto mb-10">
                 <Card className="p-10 border-none bg-gradient-to-br from-amber-50 to-orange-50 shadow-xl text-center overflow-hidden relative">
                   {/* Decorative background element */}
