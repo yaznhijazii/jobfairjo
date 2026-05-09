@@ -42,6 +42,8 @@ export async function matchJobsToCV(cvText: string, jobs: Job[]): Promise<MatchR
         
         let jobEmbedding = jobEmbeddingsCache.get(cacheKey);
         if (!jobEmbedding) {
+          // Include a slice of the description for better semantic filtering
+          const jobText = `${job.title} ${job.department} ${job.location} ${job.description.slice(0, 300)}`;
           jobEmbedding = await generateEmbedding(jobText);
           jobEmbeddingsCache.set(cacheKey, jobEmbedding);
         }
@@ -64,8 +66,9 @@ export async function matchJobsToCV(cvText: string, jobs: Job[]): Promise<MatchR
       // Use OpenAI for deep analysis on full job description
       const { score: deepScore, rationale } = await calculateSimilarityScore(cvText, job.description);
       
-      // Weighted combination: 70% deep AI analysis, 30% embedding similarity
-      const finalScore = (deepScore * 0.7) + (similarity * 0.3);
+      // Use the AI deep score as the primary score, with a tiny influence from embedding
+      // This ensures the percentage reflects the AI's "generous" reasoning
+      const finalScore = (deepScore * 0.9) + (similarity * 0.1);
       
       return { job, score: finalScore, rationale };
     })
