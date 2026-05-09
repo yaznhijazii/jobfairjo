@@ -26,7 +26,7 @@ let jobsCache: { jobs: Job[]; timestamp: number } | null = null;
 const CACHE_DURATION = 10 * 60 * 1000; // 10 minutes
 
 /**
- * Fetch live job listings from JoAcademy careers API with enrichment
+ * Fetch live job listings from JO Academy careers API with enrichment
  */
 export async function fetchJoAcademyJobs(): Promise<Job[]> {
   // Check cache first
@@ -122,7 +122,7 @@ export async function fetchJoAcademyJobs(): Promise<Job[]> {
     jobsCache = { jobs: enrichedJobs, timestamp: Date.now() };
     return enrichedJobs;
   } catch (error) {
-    console.error("Error fetching JoAcademy jobs:", error);
+    console.error("Error fetching JO Academy jobs:", error);
     if (jobsCache) return jobsCache.jobs;
     throw error;
   }

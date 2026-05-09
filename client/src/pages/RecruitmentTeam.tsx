@@ -8,7 +8,7 @@ const team = [
   {
     name: "Leen Kittawi",
     role: "Talent Acquisition Specialist",
-    description: "Expert in identifying top talent and helping candidates find their ideal roles within JoAcademy.",
+    description: "Expert in identifying top talent and helping candidates find their ideal roles within JO Academy.",
     image: "https://media.licdn.com/dms/image/D4D03AQH_7K-qV2ZJ8w/profile-displayphoto-shrink_400_400/0/1710156434456?e=1720656000&v=beta&t=7_Uq3vW9Xk8Xn7_Uq3vW9Xk8Xn7_Uq3vW9Xk8Xn7_U",
     linkedin: "https://www.linkedin.com/in/leen-kittawi/",
   },
@@ -34,7 +34,7 @@ export default function RecruitmentTeam() {
           </div>
           <h1 className="text-4xl font-bold mb-4 tracking-tight">Our Recruitment Team</h1>
           <p className="text-muted-foreground text-lg leading-relaxed">
-            The faces behind JoAcademy's growth. Our team is dedicated to matching 
+            The faces behind JO Academy's growth. Our team is dedicated to matching 
             the right talent with the right opportunities.
           </p>
         </div>
@@ -91,7 +91,7 @@ export default function RecruitmentTeam() {
 
       <footer className="border-t py-8 px-6 mt-16">
         <div className="max-w-7xl mx-auto text-center text-sm text-muted-foreground">
-          <p>© 2026 Jo Academy - Recruitment Portal</p>
+          <p>© 2026 JO Academy - Recruitment Portal</p>
         </div>
       </footer>
     </div>

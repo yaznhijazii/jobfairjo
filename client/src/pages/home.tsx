@@ -136,11 +136,10 @@ export default function Home() {
       <section className="py-16 px-6">
         <div className="max-w-3xl mx-auto text-center">
           <h1 className="text-5xl font-bold tracking-tight leading-tight mb-4">
-            Find Your Perfect Role at JoAcademy
+            Find Your Role at JO Academy
           </h1>
-          <p className="text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto">
-            Your personalized career path starts here. Upload your resume and let our advanced AI 
-            match you with the most relevant opportunities based on your skills and experience.
+          <p className="text-lg text-muted-foreground leading-relaxed max-w-xl mx-auto">
+            Upload your resume and let our AI match you with the perfect role in seconds.
           </p>
         </div>
       </section>
@@ -203,7 +202,7 @@ export default function Home() {
                     <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mb-2">
                       <AlertCircle className="w-10 h-10 text-amber-600" />
                     </div>
-                    <h3 className="font-bold text-2xl mb-2">Build Your Future at JoAcademy</h3>
+                    <h3 className="font-bold text-2xl mb-2">Build Your Future at JO Academy</h3>
                     <p className="text-lg mb-6 max-w-xl">
                       We didn't find a direct match for your current profile among our open roles. 
                       However, we're always looking for talented individuals! Please share your details 
@@ -255,7 +254,7 @@ export default function Home() {
       {/* Footer */}
       <footer className="border-t py-8 px-6 mt-auto">
         <div className="max-w-7xl mx-auto text-center text-sm text-muted-foreground">
-          <p>© 2026 Jo Academy</p>
+          <p>© 2026 JO Academy</p>
         </div>
       </footer>
     </div>

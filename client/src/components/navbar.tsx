@@ -17,11 +17,11 @@ export function Navbar() {
           <div className="flex items-center gap-2 cursor-pointer group">
             <img 
               src="/logo.png" 
-              alt="Jo Academy Logo" 
+              alt="JO Academy Logo" 
               className="h-10 w-auto object-contain transition-transform group-hover:scale-105"
             />
             <span className="font-bold text-xl tracking-tight hidden sm:inline-block">
-              JoAcademy <span className="text-primary">JobFair</span>
+              JO Academy <span className="text-primary">JobFair</span>
             </span>
           </div>
         </Link>

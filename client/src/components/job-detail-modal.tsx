@@ -108,7 +108,7 @@ export function JobDetailModal({ match, onClose }: JobDetailModalProps) {
           <div className="flex gap-3 pt-4 border-t">
             <Button asChild className="flex-1" data-testid="button-apply-now">
               <a href={job.link} target="_blank" rel="noopener noreferrer">
-                Apply on JoAcademy
+                Apply on JO Academy
                 <ExternalLink className="w-4 h-4 ml-2" />
               </a>
             </Button>

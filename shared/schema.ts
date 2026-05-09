@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-// Job listing from JoAcademy API
+// Job listing from JO Academy API
 export const jobSchema = z.object({
   title: z.string(),
   department: z.string(),

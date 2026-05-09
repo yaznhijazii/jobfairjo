@@ -1,8 +1,8 @@
-# JoAcademy Talent Finder
+# JO Academy Talent Finder
 
 ## Overview
 
-JoAcademy Talent Finder is an AI-powered recruitment platform that matches job seekers with career opportunities at JoAcademy. Users upload their resume as a PDF, and the system performs intelligent job matching using a two-stage AI process: quick semantic filtering via embeddings followed by deep analysis using OpenAI's GPT-5 model. The application provides ranked job matches with confidence scores, helping candidates discover the most relevant positions.
+JO Academy Talent Finder is an AI-powered recruitment platform that matches job seekers with career opportunities at JO Academy. Users upload their resume as a PDF, and the system performs intelligent job matching using a two-stage AI process: quick semantic filtering via embeddings followed by deep analysis using OpenAI's GPT-5 model. The application provides ranked job matches with confidence scores, helping candidates discover the most relevant positions.
 
 ## User Preferences
 
@@ -64,7 +64,7 @@ Preferred communication style: Simple, everyday language.
    - Minimum text validation (50 characters required)
 
 2. **Jobs Service** (`server/services/jobs.ts`)
-   - Fetches live job listings from JoAcademy careers API
+   - Fetches live job listings from JO Academy careers API
    - Implements in-memory caching (10-minute TTL) to reduce API calls
    - Fallback data for API failures
    - Timeout protection (10 second limit)
@@ -118,7 +118,7 @@ The application currently does not require authentication - it's a public-facing
 ### External Dependencies
 
 **Third-Party APIs**:
-- **JoAcademy Careers API**: Live job listings source
+- **JO Academy Careers API**: Live job listings source
   - Endpoint: `https://careers.joacademy.com/en/api/v1/career_page/jobs/live`
   - Provides job title, description, department, location, and application links
   - Paginated results (50 per page)

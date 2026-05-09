@@ -1,4 +1,4 @@
-# JoAcademy Talent Finder - Design Guidelines
+# JO Academy Talent Finder - Design Guidelines
 
 ## Design Approach
 
@@ -10,7 +10,7 @@
 1. **Progressive Disclosure**: Guide users through upload → analysis → results with clear visual hierarchy
 2. **Trust & Transparency**: Make AI processing visible through status indicators and confidence metrics
 3. **Scannable Results**: Job matches must be instantly comparable with clear visual differentiation
-4. **Professional Polish**: Reflect JoAcademy's brand credibility through clean, modern interface
+4. **Professional Polish**: Reflect JO Academy's brand credibility through clean, modern interface
 
 ---
 
@@ -23,7 +23,7 @@
 - **Secondary**: System UI fonts fallback - body text, descriptions
 
 **Type Scale**:
-- **Hero Title**: text-5xl (48px), font-bold, tracking-tight - "JoAcademy Talent Finder"
+- **Hero Title**: text-5xl (48px), font-bold, tracking-tight - "JO Academy Talent Finder"
 - **Section Headers**: text-2xl (24px), font-semibold - "Submit Your Resume", "Top Matches"
 - **Card Titles**: text-xl (20px), font-semibold - Job titles in results
 - **Body Text**: text-base (16px), font-normal - Descriptions, instructions
@@ -65,7 +65,7 @@
 #### Navigation Header
 - Full-width with max-w-7xl container
 - Height: h-16 to h-20
-- Logo (left): JoAcademy branding with icon
+- Logo (left): JO Academy branding with icon
 - Navigation links (center/right): "How It Works", "FAQ", "Contact"
 - CTA button (right): "Upload CV" sticky action
 
