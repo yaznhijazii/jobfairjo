@@ -6,7 +6,6 @@ console.log(`Forcing Base URL: https://api.openai.com/v1`);
 
 const openai = new OpenAI({ 
   apiKey: process.env.OPENAI_API_KEY,
-  baseURL: 'https://api.openai.com/v1', // HARDCODED TO BYPASS ENV ISSUES
 });
 
 export interface MatchScore {

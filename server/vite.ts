@@ -81,9 +81,10 @@ export function serveStatic(app: Express) {
       return;
     }
     
-    throw new Error(
-      `Could not find the build directory: ${finalDistPath}, make sure to build the client first`,
+    console.warn(
+      `Could not find the build directory: ${finalDistPath}. Static serving will be disabled.`,
     );
+    return;
   }
 
   renderStatic(app, finalDistPath);
