@@ -7,16 +7,16 @@ import { Button } from "@/components/ui/button";
 const team = [
   {
     name: "Leen Kittawi",
-    role: "HR Specialist / Recruitment",
-    description: "Dedicated to finding the best talent for JoAcademy's growing team. Feel free to connect for career opportunities.",
-    image: "https://media.licdn.com/dms/image/D4D03AQH_7K-qV2ZJ8w/profile-displayphoto-shrink_400_400/0/1710156434456?e=1720656000&v=beta&t=7_Uq3vW9Xk8Xn7_Uq3vW9Xk8Xn7_Uq3vW9Xk8Xn7_U", // Placeholder, actual LinkedIn images can be added
+    role: "Talent Acquisition Specialist",
+    description: "Expert in identifying top talent and helping candidates find their ideal roles within JoAcademy.",
+    image: "https://media.licdn.com/dms/image/D4D03AQH_7K-qV2ZJ8w/profile-displayphoto-shrink_400_400/0/1710156434456?e=1720656000&v=beta&t=7_Uq3vW9Xk8Xn7_Uq3vW9Xk8Xn7_Uq3vW9Xk8Xn7_U",
     linkedin: "https://www.linkedin.com/in/leen-kittawi/",
   },
   {
     name: "Mohammad Alnaimi",
-    role: "Recruitment Team Leader",
-    description: "Leading the talent acquisition efforts at JoAcademy. Passionate about building high-performing teams.",
-    image: "https://media.licdn.com/dms/image/D4D03AQE-3J5W4R6vJQ/profile-displayphoto-shrink_400_400/0/1691234567890?e=1720656000&v=beta&t=...", // Placeholder
+    role: "Operations & Recruitment",
+    description: "Overseeing the operational excellence and recruitment processes to ensure a smooth candidate experience.",
+    image: "https://media.licdn.com/dms/image/D4D03AQE-3J5W4R6vJQ/profile-displayphoto-shrink_400_400/0/1691234567890?e=1720656000&v=beta&t=...",
     linkedin: "https://jo.linkedin.com/in/mohammad-alnaimi-998445376",
   },
 ];
